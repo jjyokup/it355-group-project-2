@@ -12,7 +12,7 @@ public class ChatServer {
     // Static member fields declared final - conformant to CWE-500
     private static final int PORT = 8080; // Standard port for localhost
     private static Set<ClientHandler> clients = new HashSet<ClientHandler>(); // The set of clients currently connected.
-                                                                              // Set is private and static, conformant
+    private static int sentMessageCount = 0;                                  // Set is private and static, conformant
                                                                               // to CWE-582
 
     public static void main(String[] args) {
@@ -45,6 +45,10 @@ public class ChatServer {
      */
     public static void sendMessage(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
+            //Shared variable access is synchronized to comply with CWE 362, 366, and 567
+            synchronized(sender){
+                sentMessageCount++;
+            }
             //Compliant with CWE-481, is a comparison and not an assignment
             if (client != sender) {
                 client.sendMessage(message);
